@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style>
+			canvas {
+				margin: 100px;
+				display: block;
+				border: 1px solid #ccc;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="app" width="200px" height="200px"></canvas>
+		<script type="text/javascript">
+			var canvasDom = document.getElementById('app'); //获取canvas的节点
+			var ctx = canvasDom.getContext('2d'); //获取canvas的上下文
+			var casWidth = ctx.canvas.width;
+			var r = casWidth / 2;
+			
+			function drawArc() {
+				ctx.save();
+				ctx.translate(r, r);
+				ctx.beginPath();
+				ctx.lineWidth = 6;
+				ctx.arc(0, 0, r - 3, 0, 2 * Math.PI, false);
+				ctx.stroke(); //绘制路径描边   fill()为颜色填充路径
+				var fontSize = (casWidth * 0.09).toFixed() + 'px';
+				ctx.font = fontSize + ' 微软雅黑';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'middle';
+				var times = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2];
+				times.forEach(function(nums, index) {
+					var radian = 2 * Math.PI / 12 * index;
+					var x = Math.cos(radian) * (r - 30);
+					var y = Math.sin(radian) * (r - 30);
+
+					ctx.fillText(nums, x, y);
+				})
+
+				for(var i = 0; i < 60; i++) {
+					var radian = 2 * Math.PI / 60 * i;
+					var x = Math.cos(radian) * (r - 15);
+					var y = Math.sin(radian) * (r - 15);
+
+					if(i % 5 === 0) {
+						ctx.fillStyle = "#000";
+					} else {
+						ctx.fillStyle = "#ccc";
+					}
+					ctx.beginPath();
+					ctx.arc(x, y, 2, 0, 2 * Math.PI);
+					ctx.fill();
+				}
+			}
+
+			function drawHour(h,m) {
+				ctx.save();
+				ctx.beginPath();
+				ctx.rotate((h ? h : 0) * 2 * Math.PI / 12);
+				ctx.rotate((h ? h : 0) * 2 * Math.PI / 60 * m / 60);
+				ctx.lineCap = "round";
+				ctx.moveTo(0, 5);
+				ctx.lineWidth = 4;
+				ctx.lineTo(0, -casWidth * 0.18);
+				ctx.stroke();
+				ctx.restore();
+			}
+
+			function drawMintus(m) {
+				ctx.save();
+				ctx.beginPath();
+				ctx.rotate((m ? m : 0) * 2 * Math.PI / 60);
+				ctx.lineCap = "round";
+				ctx.moveTo(0, 8);
+				ctx.lineWidth = 2;
+				ctx.lineTo(0, -casWidth * 0.23);
+				ctx.stroke();
+				ctx.restore();
+			}
+
+			function drawSeconds(s) {
+				ctx.save();
+				ctx.beginPath();
+				ctx.rotate((s ? s : 0) * 2 * Math.PI / 60);
+				ctx.moveTo(-1, 0);
+				ctx.lineTo(-1, -casWidth * 0.28);
+				ctx.lineTo(1, -casWidth * 0.28);
+				ctx.lineTo(1, 0);
+				ctx.fill();
+				ctx.restore();
+			}
+
+			function drawCircle() {
+				ctx.beginPath();
+				ctx.fillStyle = '#fff';
+				ctx.arc(0, 0, 3, 0, 2 * Math.PI);
+				ctx.fill();
+			}
+
+			function draw() {
+				ctx.clearRect(0,0,casWidth,casWidth);
+				drawArc();
+				drawHour(new Date().getHours() % 12,new Date().getMinutes());
+				drawMintus(new Date().getMinutes());
+				drawSeconds(new Date().getSeconds());
+				drawCircle();
+				ctx.restore();
+			}
+			
+			draw();
+			setInterval(draw,1000);
+		</script>
+	</body>
+
+</html>
