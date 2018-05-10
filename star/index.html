@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+		</style>
+	</head>
+	<body>
+		<div>
+			<canvas id="app" width="800" height="600"></canvas>
+		</div>
+		<script type="text/javascript">
+			var canDom = document.getElementById("app");
+			ctx = canDom.getContext('2d');
+			var ctxWidth = ctx.canvas.width;
+			var ctxHeight = ctx.canvas.height;
+			var girlWidth = 600;
+			var girlHeight = 450;
+			var girl = new Image();
+				girl.src = "./images/bg.jpg";
+			var star = new Image();
+				star.src = "./images/star.png";
+			var nums = 60;
+			var stars = [];
+			var status = 0;
+			var alpha = 1;
+			window.onload = function(){
+				
+				//绘制整个box区域
+				function drawBox(){
+					ctx.fillStyle = '#393350';
+					ctx.fillRect(0,0,ctxWidth,ctxHeight);
+				}
+				
+				//绘制box中的中央图片
+				function drawBg(){
+					ctx.drawImage(girl,(ctxWidth - girlWidth)/2,(ctxHeight-girlHeight)/2,girlWidth,girlHeight);
+				}
+				
+				
+				var starObj = function(){
+					this.x;
+					this.y;
+				}
+				
+				starObj.prototype.init = function(){
+					this.x = Math.random() * 650 + 50;
+					this.y = Math.random() * 500 + 50;
+					this.status = Math.floor(Math.random() * 7);
+					this.alpha = 1;
+				}
+				
+				starObj.prototype.draw = function(){
+					this.x = (this.x + Math.random() - 0.5);
+					this.y = (this.y + Math.random()- 0.5);
+					
+					if(this.x < (ctxWidth - girlWidth)/2 || this.x > (ctxWidth - girlWidth)/2 + girlWidth || this.y < (ctxHeight - girlHeight)/2  || this.y > (ctxHeight - girlHeight)/2 + girlHeight){
+						this.init();
+						return;
+					}
+					
+					
+					if(this.status < 6){
+						++this.status;
+					}else{
+						this.status = 0;
+					}
+					if(alpha){
+						this.alpha = Math.min(1,Math.random() * alpha + 0.7);
+					}else{
+						this.alpha = alpha;
+					}
+					ctx.save();
+					ctx.globalAlpha = this.alpha;
+					ctx.drawImage(star,this.status * 7,0,7,7,this.x,this.y,7,7);
+					ctx.restore();
+				}
+				
+				for(var i = 0;i < nums; i++){
+					stars[i] = new starObj();
+					stars[i].init();
+				}
+				
+				//绘制星星
+				function drawStars(){
+					for(var i = 0;i < nums; i++){
+						stars[i].draw();
+					}
+				}
+			
+				function drawAll(){
+					drawBox();
+					drawBg();
+					drawStars();
+				}
+				drawAll();
+				setInterval(function(){
+					drawAll();
+				},100);
+				
+				
+				
+				document.addEventListener('mousemove',function(e){
+					if(e.layerX > (ctxWidth - girlWidth)/2 && e.layerX < (ctxWidth - girlWidth)/2 + girlWidth && e.layerY > (ctxHeight - girlHeight)/2  && e.layerY < (ctxHeight - girlHeight)/2 + girlHeight){
+						alpha = 0;
+					}else{
+						alpha = 1;
+					}
+				})
+			}
+			
+		</script>
+	</body>
+</html>
